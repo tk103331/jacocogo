@@ -94,17 +94,21 @@ func (dw *DataWriter) WriteBoolArray(array []bool) error {
 }
 
 func (dw *DataWriter) WriteInt16(value int16) error {
-	return binary.Write(dw.w, binary.LittleEndian, value)
+	return binary.Write(dw.w, binary.BigEndian, value)
 }
 func (dw *DataWriter) WriteUint16(value uint16) error {
-	return binary.Write(dw.w, binary.LittleEndian, value)
+	return binary.Write(dw.w, binary.BigEndian, value)
 }
 func (dw *DataWriter) WriteChar(value uint16) error {
 	return dw.WriteUint16(value)
 }
 func (dw *DataWriter) WriteInt64(value int64) error {
-	return binary.Write(dw.w, binary.LittleEndian, value)
+	return binary.Write(dw.w, binary.BigEndian, value)
 }
 func (dw *DataWriter) WriteLong(value int64) error {
 	return dw.WriteInt64(value)
+}
+
+func (dw *DataWriter) Flush() error {
+	return dw.w.Flush()
 }

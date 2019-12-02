@@ -27,14 +27,14 @@ func (dr *DataReader) ReadRune() (rune, error) {
 // Read reads a int16.
 func (dr *DataReader) ReadInt16() (int16, error) {
 	var value int16
-	err := binary.Read(dr.r, binary.LittleEndian, &value)
+	err := binary.Read(dr.r, binary.BigEndian, &value)
 	return value, err
 }
 
 // Read reads a uint16.
 func (dr *DataReader) ReadUint16() (uint16, error) {
 	var value uint16
-	err := binary.Read(dr.r, binary.LittleEndian, &value)
+	err := binary.Read(dr.r, binary.BigEndian, &value)
 	return value, err
 }
 
@@ -51,7 +51,7 @@ func (dr *DataReader) ReadUTF() (string, error) {
 // ReadInt64 reads a int64.
 func (dr *DataReader) ReadInt64() (int64, error) {
 	var value int64
-	err := binary.Read(dr.r, binary.LittleEndian, &value)
+	err := binary.Read(dr.r, binary.BigEndian, &value)
 	if err != nil {
 		return 0, err
 	}

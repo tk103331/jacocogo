@@ -23,7 +23,8 @@ func (_executionVisitor) visitExecutionData(data ExecutionData) error {
 }
 
 func TestExecutionDataReader_Read(t *testing.T) {
-	file, err := os.Open("jacoco.exec")
+
+	file, err := os.Open("../../jacoco.exec")
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,5 +36,6 @@ func TestExecutionDataReader_Read(t *testing.T) {
 	_, err = reader.Read()
 	if err != nil {
 		t.Error(err)
+		panic(err)
 	}
 }

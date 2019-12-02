@@ -54,6 +54,10 @@ func (r *ExecutionDataReader) readBlock(blockType byte) (bool, error) {
 		}
 		return true, nil
 	case BLOCK_EXECUTIONDATA:
+		err := r.readExecutionData()
+		if err != nil {
+			return false, err
+		}
 		return true, nil
 	default:
 		return false, errors.New("unknown block type")

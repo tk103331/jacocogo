@@ -29,11 +29,6 @@ type SessionInfo struct {
 	Dump  int64
 }
 
-// SessionInfoStore is a container to collect and merge session objects.
-type SessionInfoStore struct {
-	Infos []SessionInfo
-}
-
 // ExecutionData is execution data for a single Java class.
 // While instances are immutable care has to be taken about the probe data array of type boolean[] which can be modified.
 type ExecutionData struct {
@@ -42,8 +37,6 @@ type ExecutionData struct {
 	Probes []bool
 }
 
-// ExecutionDataStore is in-memory data store for execution data.
-type ExecutionDataStore struct {
-	Entries map[int64]ExecutionData
-	Names   []string
+type DataBlock struct {
+	Type byte
 }

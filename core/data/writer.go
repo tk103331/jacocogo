@@ -1,16 +1,16 @@
 package data
 
 import (
-	"github.com/tk103331/jacocogo/core/data/internal/data"
+	"github.com/tk103331/jacocogo/core/common"
 	"io"
 )
 
 type ExecutionDataWriter struct {
-	dw *data.DataWriter
+	dw *common.DataWriter
 }
 
 func NewWriter(writer io.Writer) *ExecutionDataWriter {
-	dataWriter := &ExecutionDataWriter{dw: data.NewWriter(writer)}
+	dataWriter := &ExecutionDataWriter{dw: common.NewWriter(writer)}
 	dataWriter.writeHeader()
 	return dataWriter
 }
@@ -44,16 +44,16 @@ func (w *ExecutionDataWriter) writeExecutionData(data ExecutionData) error {
 	return nil
 }
 
-func (w *ExecutionDataWriter) visitSessionInfo(info SessionInfo) error {
+func (w *ExecutionDataWriter) VisitSessionInfo(info SessionInfo) error {
 	return w.writeSessionInfo(info)
 }
 
-func (w *ExecutionDataWriter) visitExecutionData(data ExecutionData) error {
+func (w *ExecutionDataWriter) VisitExecutionData(data ExecutionData) error {
 	return w.writeExecutionData(data)
 }
 
 func GetFileHeader() ([]byte, error) {
-	buffer := data.NewBuffer(32)
+	buffer := common.NewBuffer(32)
 	NewWriter(buffer)
 	return buffer.Data(), nil
 }

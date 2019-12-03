@@ -1,20 +1,31 @@
 package data
 
 import (
-	"github.com/tk103331/jacocogo/core/data/internal/data"
+	"github.com/tk103331/jacocogo/core/common"
 	"io"
 )
 
 // ExecutionDataReader is deserialization of execution data from binary streams.
 type ExecutionDataReader struct {
-	dr               *data.DataReader
+	dr               *common.DataReader
 	firstBlock       bool
-	SessionVisitor   SessionInfoVisitor
-	ExecutionVisitor ExecutionDataVisitor
+	sessionVisitor   SessionInfoVisitor
+	executionVisitor ExecutionDataVisitor
+	blockVisitor     DataBlockVisitor
 }
 
 func NewReader(reader io.Reader) *ExecutionDataReader {
-	return &ExecutionDataReader{dr: data.NewReader(reader)}
+	return &ExecutionDataReader{dr: common.NewReader(reader)}
+}
+
+func (r *ExecutionDataReader) SetSessionVisitor(visitor SessionInfoVisitor) {
+	r.sessionVisitor = visitor
+}
+func (r *ExecutionDataReader) SetExecutionVisitor(visitor ExecutionDataVisitor) {
+	r.executionVisitor = visitor
+}
+func (r *ExecutionDataReader) SetDataBlockVisitor(visitor DataBlockVisitor) {
+	r.blockVisitor = visitor
 }
 
 func (r *ExecutionDataReader) Read() (bool, error) {
@@ -59,6 +70,9 @@ func (r *ExecutionDataReader) readBlock(blockType byte) (bool, error) {
 		}
 		return true, nil
 	default:
+		if r.blockVisitor != nil {
+			return r.blockVisitor.VisitDataBlock(DataBlock{Type: blockType})
+		}
 		return false, UnknownBlockTypeError
 	}
 }
@@ -82,7 +96,7 @@ func (r *ExecutionDataReader) readHeader() error {
 }
 
 func (r *ExecutionDataReader) readSessionInfo() error {
-	if r.SessionVisitor == nil {
+	if r.sessionVisitor == nil {
 		return NoSessionVisitorError
 	}
 	id, err := r.dr.ReadUTF()
@@ -97,11 +111,11 @@ func (r *ExecutionDataReader) readSessionInfo() error {
 	if err != nil {
 		return err
 	}
-	return r.SessionVisitor.visitSessionInfo(SessionInfo{id, start, dump})
+	return r.sessionVisitor.VisitSessionInfo(SessionInfo{id, start, dump})
 }
 
 func (r *ExecutionDataReader) readExecutionData() error {
-	if r.ExecutionVisitor == nil {
+	if r.executionVisitor == nil {
 		return NoExecutionVisitorError
 	}
 	id, err := r.dr.ReadLong()
@@ -116,5 +130,5 @@ func (r *ExecutionDataReader) readExecutionData() error {
 	if err != nil {
 		return err
 	}
-	return r.ExecutionVisitor.visitExecutionData(ExecutionData{id, name, probes})
+	return r.executionVisitor.VisitExecutionData(ExecutionData{id, name, probes})
 }

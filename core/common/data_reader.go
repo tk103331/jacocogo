@@ -1,4 +1,4 @@
-package data
+package common
 
 import (
 	"bufio"
@@ -22,6 +22,18 @@ func (dr *DataReader) ReadByte() (byte, error) {
 func (dr *DataReader) ReadRune() (rune, error) {
 	r, _, err := dr.r.ReadRune()
 	return r, err
+}
+
+// Read reads a byte.
+func (dr *DataReader) ReadBool() (bool, error) {
+	value, err := dr.r.ReadByte()
+	if err != nil {
+		return false, err
+	}
+	if value < 0 {
+		return false, io.EOF
+	}
+	return value != 0, err
 }
 
 // Read reads a int16.

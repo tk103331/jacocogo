@@ -1,4 +1,4 @@
-package data
+package common
 
 import (
 	"bufio"
@@ -108,7 +108,13 @@ func (dw *DataWriter) WriteInt64(value int64) error {
 func (dw *DataWriter) WriteLong(value int64) error {
 	return dw.WriteInt64(value)
 }
-
+func (dw *DataWriter) WriteBool(value bool) error {
+	if value {
+		return dw.WriteByte(1)
+	} else {
+		return dw.WriteByte(0)
+	}
+}
 func (dw *DataWriter) Flush() error {
 	return dw.w.Flush()
 }

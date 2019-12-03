@@ -1,9 +1,13 @@
 package data
 
 type SessionInfoVisitor interface {
-	visitSessionInfo(info SessionInfo) error
+	VisitSessionInfo(info SessionInfo) error
 }
 
 type ExecutionDataVisitor interface {
-	visitExecutionData(data ExecutionData) error
+	VisitExecutionData(data ExecutionData) error
+}
+
+type DataBlockVisitor interface {
+	VisitDataBlock(block DataBlock) (bool, error)
 }

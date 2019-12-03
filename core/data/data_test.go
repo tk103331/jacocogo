@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"github.com/tk103331/jacocogo/core/data/internal/data"
+	"github.com/tk103331/jacocogo/core/common"
 	"math/rand"
 	"testing"
 )
@@ -10,7 +10,7 @@ import (
 type _sessionVisitor struct {
 }
 
-func (_sessionVisitor) visitSessionInfo(info SessionInfo) error {
+func (_sessionVisitor) VisitSessionInfo(info SessionInfo) error {
 	fmt.Println(info)
 	return nil
 }
@@ -18,17 +18,17 @@ func (_sessionVisitor) visitSessionInfo(info SessionInfo) error {
 type _executionVisitor struct {
 }
 
-func (_executionVisitor) visitExecutionData(data ExecutionData) error {
+func (_executionVisitor) VisitExecutionData(data ExecutionData) error {
 	fmt.Println(data)
 	return nil
 }
 
 func TestEmpty(t *testing.T) {
-	buffer := data.NewBuffer(32)
+	buffer := common.NewBuffer(32)
 
 	reader := NewReader(buffer)
-	reader.ExecutionVisitor = _executionVisitor{}
-	reader.SessionVisitor = _sessionVisitor{}
+	reader.SetSessionVisitor(_sessionVisitor{})
+	reader.SetExecutionVisitor(_executionVisitor{})
 
 	_, err := reader.Read()
 	assertError(t, err)
@@ -47,7 +47,7 @@ func TestGetFileHeader(t *testing.T) {
 }
 
 func TestMultipleHeaders(t *testing.T) {
-	buffer := data.NewBuffer(128)
+	buffer := common.NewBuffer(128)
 
 	NewWriter(buffer)
 	NewWriter(buffer)
@@ -57,7 +57,7 @@ func TestMultipleHeaders(t *testing.T) {
 }
 
 func TestInvalidMagicNumber(t *testing.T) {
-	buffer := data.NewDataBuffer(32)
+	buffer := common.NewDataBuffer(32)
 	buffer.WriteByte(BLOCK_HEADER)
 	buffer.WriteByte(0x12)
 	buffer.WriteByte(0x34)
@@ -68,7 +68,7 @@ func TestInvalidMagicNumber(t *testing.T) {
 }
 
 func TestInvalidVersion(t *testing.T) {
-	buffer := data.NewDataBuffer(32)
+	buffer := common.NewDataBuffer(32)
 	buffer.WriteByte(BLOCK_HEADER)
 	buffer.WriteChar(MAGIC_NUMBER)
 	version := FORMAT_VERSION - 1
@@ -80,14 +80,14 @@ func TestInvalidVersion(t *testing.T) {
 }
 
 func TestMissingHeader(t *testing.T) {
-	buffer := data.NewDataBuffer(32)
+	buffer := common.NewDataBuffer(32)
 	writer := NewWriter(buffer)
-	writer.visitExecutionData(ExecutionData{Id: 0x100000000000000, Name: "Sample", Probes: createProbes(8)})
+	writer.VisitExecutionData(ExecutionData{Id: 0x100000000000000, Name: "Sample", Probes: createProbes(8)})
 	_, err := NewReader(buffer).Read()
 	assertEqual(t, InvalidExecutionDataError, err)
 }
 func TestUnknownBlock(t *testing.T) {
-	buffer := data.NewDataBuffer(32)
+	buffer := common.NewDataBuffer(32)
 	buffer.WriteByte(0xff)
 	buffer.Flush()
 	_, err := NewReader(buffer).Read()
@@ -95,9 +95,9 @@ func TestUnknownBlock(t *testing.T) {
 }
 
 func TestNoSessionInfoVisitor(t *testing.T) {
-	buffer := data.NewDataBuffer(1024)
+	buffer := common.NewDataBuffer(1024)
 
-	NewWriter(buffer).visitSessionInfo(SessionInfo{Id: "x", Start: 0, Dump: 1})
+	NewWriter(buffer).VisitSessionInfo(SessionInfo{Id: "x", Start: 0, Dump: 1})
 	_, err := NewReader(buffer).Read()
 	assertEqual(t, NoSessionVisitorError, err)
 }

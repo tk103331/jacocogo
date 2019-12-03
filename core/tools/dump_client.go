@@ -8,6 +8,7 @@ import (
 )
 
 type DumpClient struct {
+	conn            net.Conn
 	dump            bool
 	reset           bool
 	retryCount      int
@@ -17,7 +18,7 @@ type DumpClient struct {
 }
 
 func NewDumpClient() *DumpClient {
-	return &DumpClient{true, false, 0, 1000, nil, nil}
+	return &DumpClient{nil, true, false, 0, 1000, nil, nil}
 }
 
 func (dc *DumpClient) SetDump(dump bool) {
@@ -32,12 +33,19 @@ func (dc *DumpClient) SetRetryCount(retryCount int) {
 func (dc *DumpClient) SetRetryDelay(retryDelay time.Duration) {
 	dc.retryDelay = retryDelay
 }
+func (dc *DumpClient) Close() error {
+	if dc.conn != nil {
+		return dc.conn.Close()
+	}
+	return nil
+}
 func (dc *DumpClient) Dump(address string) (*FileLoader, error) {
 	fileLoader := NewFileLoader()
 	conn, err := dc.tryConnect(address)
 	if err != nil {
 		return fileLoader, nil
 	}
+	defer conn.Close()
 	reader := runtime.NewControlReader(conn)
 	writer := runtime.NewControlWriter(conn)
 

@@ -23,5 +23,6 @@ func (cw *ControlWriter) VisitDumpCommand(dump, reset bool) error {
 	cw.w.WriteByte(BLOCK_CMDDUMP)
 	cw.w.WriteBool(dump)
 	cw.w.WriteBool(reset)
+	cw.w.Flush()
 	return nil
 }

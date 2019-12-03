@@ -19,28 +19,70 @@ func (w *ExecutionDataWriter) Flush() error {
 	return w.dw.Flush()
 }
 func (w *ExecutionDataWriter) writeHeader() error {
-	w.dw.WriteByte(BLOCK_HEADER)
-	w.dw.WriteChar(MAGIC_NUMBER)
-	w.dw.WriteChar(FORMAT_VERSION)
-	w.dw.Flush()
+	err := w.dw.WriteByte(BLOCK_HEADER)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteChar(MAGIC_NUMBER)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteChar(FORMAT_VERSION)
+	if err != nil {
+		return err
+	}
+	err = w.dw.Flush()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (w *ExecutionDataWriter) writeSessionInfo(info SessionInfo) error {
-	w.dw.WriteByte(BLOCK_SESSIONINFO)
-	w.dw.WriteUTF(info.Id)
-	w.dw.WriteLong(info.Start)
-	w.dw.WriteLong(info.Dump)
-	w.dw.Flush()
+	err := w.dw.WriteByte(BLOCK_SESSIONINFO)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteUTF(info.Id)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteLong(info.Start)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteLong(info.Dump)
+	if err != nil {
+		return err
+	}
+	err = w.dw.Flush()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (w *ExecutionDataWriter) writeExecutionData(data ExecutionData) error {
-	w.dw.WriteByte(BLOCK_EXECUTIONDATA)
-	w.dw.WriteLong(data.Id)
-	w.dw.WriteUTF(data.Name)
-	w.dw.WriteBoolArray(data.Probes)
-	w.dw.Flush()
+	err := w.dw.WriteByte(BLOCK_EXECUTIONDATA)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteLong(data.Id)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteUTF(data.Name)
+	if err != nil {
+		return err
+	}
+	err = w.dw.WriteBoolArray(data.Probes)
+	if err != nil {
+		return err
+	}
+	err = w.dw.Flush()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

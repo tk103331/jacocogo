@@ -41,7 +41,8 @@ type ExecutionDataStore struct {
 
 func NewExecutionStore() *ExecutionDataStore {
 	entries := make(map[int64]ExecutionData, 0)
-	return &ExecutionDataStore{entries: entries}
+	names := make(map[string]bool, 0)
+	return &ExecutionDataStore{entries: entries, names: names}
 }
 
 func (es *ExecutionDataStore) Contents() []ExecutionData {

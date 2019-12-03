@@ -17,6 +17,10 @@ const BLOCK_SESSIONINFO byte = 0x10
 const BLOCK_EXECUTIONDATA byte = 0x11
 
 var InvalidExecutionDataError error = errors.New("invalid execution data file")
+var NoSessionVisitorError error = errors.New("no session info visitor")
+var NoExecutionVisitorError error = errors.New("no session info visitor")
+var IncompatibleVersionError error = errors.New("incompatible execution data version")
+var UnknownBlockTypeError error = errors.New("unknown block type")
 
 // SessionInfo is a session which was the source of execution data.
 type SessionInfo struct {

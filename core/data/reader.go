@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"github.com/tk103331/jacocogo/core/data/internal/data"
 	"io"
 )
@@ -10,8 +9,8 @@ import (
 type ExecutionDataReader struct {
 	dr               *data.DataReader
 	firstBlock       bool
-	sessionVisitor   SessionInfoVisitor
-	executionVisitor ExecutionDataVisitor
+	SessionVisitor   SessionInfoVisitor
+	ExecutionVisitor ExecutionDataVisitor
 }
 
 func NewReader(reader io.Reader) *ExecutionDataReader {
@@ -30,7 +29,7 @@ func (r *ExecutionDataReader) Read() (bool, error) {
 		r.firstBlock = false
 		more, err := r.readBlock(blockType)
 		if err != nil {
-			return false, InvalidExecutionDataError
+			return false, err
 		}
 		if !more {
 			break
@@ -60,7 +59,7 @@ func (r *ExecutionDataReader) readBlock(blockType byte) (bool, error) {
 		}
 		return true, nil
 	default:
-		return false, errors.New("unknown block type")
+		return false, UnknownBlockTypeError
 	}
 }
 
@@ -77,14 +76,14 @@ func (r *ExecutionDataReader) readHeader() error {
 		return err
 	}
 	if version != FORMAT_VERSION {
-		return errors.New("incompatible execution data version")
+		return InvalidExecutionDataError
 	}
 	return nil
 }
 
 func (r *ExecutionDataReader) readSessionInfo() error {
-	if r.sessionVisitor == nil {
-		return errors.New("no session info visitor")
+	if r.SessionVisitor == nil {
+		return NoSessionVisitorError
 	}
 	id, err := r.dr.ReadUTF()
 	if err != nil {
@@ -98,12 +97,12 @@ func (r *ExecutionDataReader) readSessionInfo() error {
 	if err != nil {
 		return err
 	}
-	return r.sessionVisitor.visitSessionInfo(SessionInfo{id, start, dump})
+	return r.SessionVisitor.visitSessionInfo(SessionInfo{id, start, dump})
 }
 
 func (r *ExecutionDataReader) readExecutionData() error {
-	if r.executionVisitor == nil {
-		return errors.New("no execution data visitor")
+	if r.ExecutionVisitor == nil {
+		return NoExecutionVisitorError
 	}
 	id, err := r.dr.ReadLong()
 	if err != nil {
@@ -117,5 +116,5 @@ func (r *ExecutionDataReader) readExecutionData() error {
 	if err != nil {
 		return err
 	}
-	return r.executionVisitor.visitExecutionData(ExecutionData{id, name, probes})
+	return r.ExecutionVisitor.visitExecutionData(ExecutionData{id, name, probes})
 }

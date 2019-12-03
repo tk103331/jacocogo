@@ -15,6 +15,9 @@ func NewWriter(writer io.Writer) *ExecutionDataWriter {
 	return dataWriter
 }
 
+func (w *ExecutionDataWriter) Flush() error {
+	return w.dw.Flush()
+}
 func (w *ExecutionDataWriter) writeHeader() error {
 	w.dw.WriteByte(BLOCK_HEADER)
 	w.dw.WriteChar(MAGIC_NUMBER)

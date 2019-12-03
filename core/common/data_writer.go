@@ -42,13 +42,16 @@ func (dw *DataWriter) WriteVarInt(value int) error {
 
 // WriteString writes a string.
 func (dw *DataWriter) WriteString(value string) error {
-	bytes := []byte(value)
+	bytes := []rune(value)
 	bytesNumber := uint16(len(bytes))
 	err := binary.Write(dw.w, binary.BigEndian, bytesNumber)
 	if err != nil {
 		return err
 	}
-	_, err = dw.w.Write(bytes)
+	runes := []rune(value)
+	for _, r := range runes {
+		_, err = dw.w.WriteRune(r)
+	}
 	if err != nil {
 		return err
 	}

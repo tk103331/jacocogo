@@ -117,17 +117,36 @@ func (dr *DataReader) ReadBoolArray() ([]bool, error) {
 
 // ReadBooleanArray reads a string.
 func (dr *DataReader) ReadString() (string, error) {
-	var bytesNumber uint16
-	err := binary.Read(dr.r, binary.BigEndian, &bytesNumber)
+	var length uint16
+	err := binary.Read(dr.r, binary.BigEndian, &length)
 	if err != nil {
 		return "", err
 	}
 
-	buffer := make([]byte, bytesNumber)
-	_, err = dr.r.Read(buffer)
-	if err != nil {
-		return "", err
+	runes := make([]rune, 0)
+	total := 0
+	for total < int(length) {
+		r, size, err := dr.r.ReadRune()
+		if err != nil {
+			return string(runes), err
+		}
+		total = total + size
+		runes = append(runes, r)
 	}
 
-	return string(buffer[:]), nil
+	if total > int(length) {
+		err := dr.r.UnreadRune()
+		if err != nil {
+			return string(runes), err
+		}
+		bs := make([]byte, total-int(length))
+		_, err = dr.r.Read(bs)
+		if err != nil {
+			return string(runes), err
+		}
+		bytes := append([]byte(string(runes)), bs...)
+		return string(bytes), nil
+	}
+
+	return string(runes), nil
 }

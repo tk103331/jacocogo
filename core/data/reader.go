@@ -32,7 +32,10 @@ func (r *ExecutionDataReader) Read() (bool, error) {
 	for {
 		blockType, err := r.dr.ReadByte()
 		if err != nil {
-			return false, err // EOF
+			if err == io.EOF || err == io.ErrNoProgress {
+				return true, nil // EOF
+			}
+			return false, err
 		}
 		if r.firstBlock && blockType != BLOCK_HEADER {
 			return false, InvalidExecutionDataError

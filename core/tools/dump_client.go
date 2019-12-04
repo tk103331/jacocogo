@@ -75,6 +75,7 @@ func (dc *DumpClient) tryConnect(address string) (net.Conn, error) {
 		} else if count+1 > dc.retryCount {
 			return nil, err
 		}
+		count = count + 1
 		dc.OnConnectFailed(err)
 		time.Sleep(dc.retryDelay)
 	}

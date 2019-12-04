@@ -1,5 +1,4 @@
 # appveyor.yml
-build: off
 
 clone_folder: /usr/go/src/github.com/$username/$project
 
@@ -13,3 +12,6 @@ before_test:
 
 test_script:
   - go test ./...
+  
+build_script:
+  - go build

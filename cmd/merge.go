@@ -9,8 +9,8 @@ import (
 )
 
 type mergeArgs struct {
-	execfiles string
-	destfile  string
+	execFiles string
+	destFile  string
 }
 
 type mergeCmd struct {
@@ -18,8 +18,7 @@ type mergeCmd struct {
 }
 
 func init() {
-	cmd := &mergeCmd{}
-	cmds[cmd.name()] = cmd
+	add(&mergeCmd{})
 }
 
 func (mc *mergeCmd) name() string {
@@ -32,9 +31,9 @@ func (mc *mergeCmd) desc() string {
 
 func (mc *mergeCmd) parse(args []string) {
 	mergeArgs := mergeArgs{}
-	mergeFlagSet := flag.NewFlagSet("merge", flag.ExitOnError)
-	mergeFlagSet.StringVar(&mergeArgs.execfiles, "execfiles", "", "list of JaCoCo *.exec files to read")
-	mergeFlagSet.StringVar(&mergeArgs.destfile, "destfile", "jacoco.exec", "file to write merged execution data to (default jacoco.exec)")
+	mergeFlagSet := flag.NewFlagSet(mc.name(), flag.ExitOnError)
+	mergeFlagSet.StringVar(&mergeArgs.execFiles, "execfiles", "", "list of JaCoCo *.exec files to read")
+	mergeFlagSet.StringVar(&mergeArgs.destFile, "destfile", "jacoco.exec", "file to write merged execution data to (default jacoco.exec)")
 	err := mergeFlagSet.Parse(args)
 	if err != nil {
 		mergeFlagSet.PrintDefaults()
@@ -44,8 +43,8 @@ func (mc *mergeCmd) parse(args []string) {
 }
 
 func (mc *mergeCmd) exec() error {
-	execfiles := mc.args.execfiles
-	destfile := mc.args.destfile
+	execfiles := mc.args.execFiles
+	destfile := mc.args.destFile
 	paths := strings.Split(execfiles, ",")
 
 	loader := tools.NewFileLoader()
